@@ -1,11 +1,11 @@
 import streamlit as st
-import groq
+from groq import Groq
 
 st.set_page_config(page_title="My Chatbot", page_icon="🤖")
 st.title("My Free AI Chatbot")
 st.caption("Powered by Groq + Llama 3")
 
-client = groq.Groq(api_key=st.secrets["GROQ_API_KEY"])
+client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
