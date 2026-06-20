@@ -28,7 +28,7 @@ if prompt := st.chat_input("Ask me anything..."):
             for m in st.session_state.messages
         ]
         response = client.chat.completions.create(
-            model="llama3-8b-8192",
+            model="llama-3.3-70b-versatile"
             messages=chat_history,
             max_tokens=1024
         )
