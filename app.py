@@ -145,7 +145,7 @@ Keep answers easy to understand."""
 with st.sidebar:
     st.markdown("""
         <div style='text-align:center; padding: 10px;'>
-            <img src='https://cdn-icons-png.flaticon.com/512/4712/4712109.png' width='90'/>
+            <img src='https://placehold.co/100x100/7c3aed/white?text=H&font=montserrat' width='90' style='border-radius:50%; box-shadow: 0 0 20px rgba(124,58,237,0.5);'/>
             <h2 style='color:#7c3aed; margin-top:10px;'>Hadie's AI Chatbot</h2>
             <p style='color:#4f46e5; font-size:13px;'>Powered by Groq + Llama 3</p>
         </div>
