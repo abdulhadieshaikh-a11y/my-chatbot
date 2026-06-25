@@ -195,8 +195,8 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
 # Header
-st.markdown <p class="title-style">✨ Hadie's AI Chatbot ✨</p>', unsafe_allow_html=True)
-st.markdown <p class="subtitle-style">🌟 Hadie's Personal Free AI Assistant 🌟</p>',
+st.markdown ('<p class="title-style">✨ Hadie's AI Chatbot ✨</p>', unsafe_allow_html=True)
+st.markdown ('<p class="subtitle-style">🌟 Hadie's Personal Free AI Assistant 🌟</p>',
            unsafe_allow_html=True)
 st.markdown('<hr class="glow-divider">', unsafe_allow_html=True)
 
