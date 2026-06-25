@@ -12,10 +12,10 @@ st.markdown("""
     <style>
 
     /* Background gradient */
-    .stApp {
-        background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-        background-attachment: fixed;
-    }
+.stApp {
+    background: linear-gradient(135deg, #f0f4ff, #e8f0fe, #f5f0ff);
+    background-attachment: fixed;
+}
 
     /* Main container */
     .block-container {
@@ -80,17 +80,17 @@ st.markdown("""
     }
 
     /* Sidebar */
-    [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #1e1b4b, #0f0c29) !important;
-        border-right: 1px solid rgba(167, 139, 250, 0.3) !important;
-    }
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #ede9fe, #ddd6fe) !important;
+    border-right: 1px solid rgba(167, 139, 250, 0.3) !important;
+}
 
     /* Sidebar text */
-    [data-testid="stSidebar"] p, 
-    [data-testid="stSidebar"] li,
-    [data-testid="stSidebar"] label {
-        color: #e2e8f0 !important;
-    }
+[data-testid="stSidebar"] p, 
+[data-testid="stSidebar"] li,
+[data-testid="stSidebar"] label {
+    color: #1e1b4b !important;
+}
 
     /* Buttons */
     .stButton button {
@@ -115,13 +115,15 @@ st.markdown("""
         color: #a78bfa !important;
     }
 
-    /* Scrollbar */
+     /* Scrollbar */
     ::-webkit-scrollbar {
         width: 6px;
     }
-    ::-webkit-scrollbar-track {
-        background: #0f0c29;
-    }
+    
+::-webkit-scrollbar-track {
+    background: #f0f4ff;
+}
+    
     ::-webkit-scrollbar-thumb {
         background: #7c3aed;
         border-radius: 10px;
