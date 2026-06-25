@@ -2,7 +2,7 @@ import streamlit as st
 from groq import Groq
 
 st.set_page_config(
-    page_title="My AI Chatbot",
+    page_title="Hadie's AI Chatbot",
     page_icon="🤖",
     layout="centered"
 )
@@ -162,7 +162,7 @@ with st.sidebar:
     st.markdown("""
         <div style='text-align:center; padding: 10px;'>
             <img src='https://cdn-icons-png.flaticon.com/512/4712/4712109.png' width='90'/>
-            <h2 style='color:#a78bfa; margin-top:10px;'>My AI Chatbot</h2>
+            <h2 style='color:#a78bfa; margin-top:10px;'>Hadie's AI Chatbot</h2>
             <p style='color:#60a5fa; font-size:13px;'>Powered by Groq + Llama 3</p>
         </div>
     """, unsafe_allow_html=True)
@@ -195,8 +195,8 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
 # Header
-st.markdown('<p class="title-style">✨ My AI Chatbot ✨</p>', unsafe_allow_html=True)
-st.markdown('<p class="subtitle-style">🌟 Your Personal Free AI Assistant 🌟</p>',
+st.markdown <p class="title-style">✨ Hadie's AI Chatbot ✨</p>', unsafe_allow_html=True)
+st.markdown <p class="subtitle-style">🌟 Hadie's Personal Free AI Assistant 🌟</p>',
            unsafe_allow_html=True)
 st.markdown('<hr class="glow-divider">', unsafe_allow_html=True)
 
