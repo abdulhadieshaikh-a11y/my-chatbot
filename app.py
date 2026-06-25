@@ -69,12 +69,27 @@ st.markdown("""
         font-weight: 600 !important;
         width: 100% !important;
     }
-    ::-webkit-scrollbar {
-        width: 6px;
+    .typing-animation {
+        display: flex;
+        gap: 5px;
+        padding: 10px;
+        align-items: center;
     }
-    ::-webkit-scrollbar-track {
-        background: #f0f4ff;
+    .typing-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #7c3aed;
+        animation: bounce 1.2s infinite;
     }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+        0%, 60%, 100% { transform: translateY(0); }
+        30% { transform: translateY(-10px); }
+    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #f0f4ff; }
     ::-webkit-scrollbar-thumb {
         background: #7c3aed;
         border-radius: 10px;
@@ -94,6 +109,39 @@ def speak_text(text):
     """
     st.components.v1.html(js, height=0)
 
+def show_typing():
+    st.markdown("""
+        <div class="typing-animation">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <span style="color:#7c3aed; font-size:14px; margin-left:5px;">
+                Hadie's AI is thinking...
+            </span>
+        </div>
+    """, unsafe_allow_html=True)
+
+SYSTEM_PROMPT = """You are Hadie's AI Assistant — a smart, friendly and helpful AI.
+You can help with absolutely everything including:
+- General knowledge and facts
+- Math problems and calculations
+- Science questions
+- Coding and programming help
+- Cooking recipes
+- Health and fitness tips
+- Travel information
+- Urdu and English language help
+- Hard and complex questions
+- History and geography
+- Business and finance advice
+- Islamic knowledge
+- And absolutely anything else!
+
+Always give clear, helpful and friendly answers.
+If someone asks a hard question, think carefully and give the best answer.
+Be warm, encouraging and supportive.
+Keep answers easy to understand."""
+
 with st.sidebar:
     st.markdown("""
         <div style='text-align:center; padding: 10px;'>
@@ -107,25 +155,41 @@ with st.sidebar:
     st.markdown("### Settings")
     voice_enabled = st.toggle("Voice Reply", value=True)
     st.markdown("<hr style='border-color:#7c3aed;'>", unsafe_allow_html=True)
-    st.markdown("### Ask me about:")
-    topics = ["General Knowledge", "Science and Tech", "Cooking Recipes",
-              "Math Problems", "Urdu and English", "Coding Help",
-              "Health Tips", "Travel and Places"]
+
+    st.markdown("### I can help you with:")
+    topics = [
+        "General Knowledge",
+        "Math and Calculations",
+        "Science Questions",
+        "Coding and Programming",
+        "Cooking Recipes",
+        "Health and Fitness",
+        "Travel Information",
+        "Urdu and English Help",
+        "Islamic Knowledge",
+        "Business and Finance",
+        "Hard and Complex Questions",
+        "And Much More!"
+    ]
     for topic in topics:
-        st.markdown(f"<p style='margin:2px 0; font-size:14px; color:#1e1b4b;'>{topic}</p>",
-                   unsafe_allow_html=True)
+        st.markdown(
+            f"<p style='margin:2px 0; font-size:13px; color:#1e1b4b;'>✅ {topic}</p>",
+            unsafe_allow_html=True
+        )
+
     st.markdown("<hr style='border-color:#7c3aed;'>", unsafe_allow_html=True)
     if st.button("Clear Chat History"):
         st.session_state.messages = []
         st.rerun()
     st.markdown("""
         <div style='text-align:center; margin-top:20px;'>
-            <p style='color:#7c3aed; font-size:12px;'>Made with love using Streamlit</p>
+            <p style='color:#7c3aed; font-size:12px;'>Made with love by Hadie</p>
         </div>
     """, unsafe_allow_html=True)
 
 st.markdown('<p class="title-style">Hadie AI Chatbot</p>', unsafe_allow_html=True)
-st.markdown('<p class="subtitle-style">Your Personal Free AI Assistant</p>', unsafe_allow_html=True)
+st.markdown('<p class="subtitle-style">Your Personal Smart AI Assistant</p>',
+           unsafe_allow_html=True)
 st.markdown('<hr class="glow-divider">', unsafe_allow_html=True)
 
 if "messages" not in st.session_state:
@@ -134,37 +198,49 @@ if "messages" not in st.session_state:
         st.markdown("""
         **Hello! Welcome to Hadie's AI Chatbot!**
 
-        I am your personal AI assistant powered by the latest AI technology!
+        I am your personal smart AI assistant!
+        I can help you with **anything** you need:
 
-        I can help you with anything you need:
-        - Answer your questions
-        - Help you learn new things
-        - Give you recipes
-        - Help with coding
-        - And much more!
+        - General knowledge and facts
+        - Math and science questions
+        - Coding and programming
+        - Cooking recipes
+        - Health and fitness tips
+        - Islamic knowledge
+        - Hard and complex questions
+        - And absolutely anything else!
 
-        Just type your message below and let's chat!
+        **Just type your question below — I am ready to help!**
         """)
 
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-if prompt := st.chat_input("Type your message here..."):
+if prompt := st.chat_input("Ask me anything..."):
     with st.chat_message("user"):
         st.markdown(prompt)
 
     client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
     with st.chat_message("assistant"):
-        with st.spinner("Thinking..."):
-            response = client.chat.completions.create(
-                model="llama-3.3-70b-versatile",
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=1024
-            )
-            reply = response.choices[0].message.content
-            st.markdown(reply)
+        typing_placeholder = st.empty()
+        with typing_placeholder:
+            show_typing()
+
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                *[{"role": m["role"], "content": m["content"]}
+                  for m in st.session_state.messages],
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=2048
+        )
+        reply = response.choices[0].message.content
+        typing_placeholder.empty()
+        st.markdown(reply)
 
     if voice_enabled:
         speak_text(reply)
