@@ -194,7 +194,7 @@ st.markdown('<hr class="glow-divider">', unsafe_allow_html=True)
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
-    with st.chat_message("assistant"):
+    with st.chat_message("assistant", avatar="https://placehold.co/100x100/7c3aed/white?text=H&font=montserrat"):
         st.markdown("""
         **Hello! Welcome to Hadie's AI Chatbot!**
 
@@ -214,7 +214,8 @@ if "messages" not in st.session_state:
         """)
 
 for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
+    avatar = "https://placehold.co/100x100/7c3aed/white?text=H&font=montserrat" if message["role"] == "assistant" else None
+    with st.chat_message(message["role"], avatar=avatar):
         st.markdown(message["content"])
 
 if prompt := st.chat_input("Ask me anything..."):
@@ -223,7 +224,7 @@ if prompt := st.chat_input("Ask me anything..."):
 
     client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
-    with st.chat_message("assistant"):
+    with st.chat_message("assistant", avatar="https://placehold.co/100x100/7c3aed/white?text=H&font=montserrat"):
         typing_placeholder = st.empty()
         with typing_placeholder:
             show_typing()
