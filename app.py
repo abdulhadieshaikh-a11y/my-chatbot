@@ -1,5 +1,6 @@
 import streamlit as st
 from groq import Groq
+import streamlit.components.v1 as components
 
 st.set_page_config(
     page_title="Hadie's AI Chatbot",
@@ -10,18 +11,15 @@ st.set_page_config(
 st.markdown("""
     <style>
 
-    /* Hide default streamlit header */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
 
-    /* Background */
     .stApp {
         background: linear-gradient(135deg, #f0f4ff, #e8f0fe, #f5f0ff);
         background-attachment: fixed;
     }
 
-    /* Beautiful Navbar */
     .navbar {
         position: fixed;
         top: 0;
@@ -74,14 +72,8 @@ st.markdown("""
         color: white;
         font-size: 14px;
         font-weight: 500;
-        text-decoration: none;
         padding: 6px 14px;
         border-radius: 20px;
-        transition: all 0.3s;
-        cursor: pointer;
-    }
-    .navbar-link:hover {
-        background: rgba(255,255,255,0.2);
     }
     .navbar-badge {
         background: #f472b6;
@@ -91,15 +83,11 @@ st.markdown("""
         padding: 3px 10px;
         border-radius: 20px;
     }
-
-    /* Push content below navbar */
     .block-container {
         padding-top: 90px !important;
         max-width: 800px;
         margin: auto;
     }
-
-    /* Title */
     .title-style {
         text-align: center;
         background: linear-gradient(90deg, #7c3aed, #4f46e5, #7c3aed);
@@ -123,24 +111,18 @@ st.markdown("""
         border-radius: 10px;
         margin: 10px 0 20px 0;
     }
-
-    /* Chat messages */
     .stChatMessage {
         border-radius: 20px !important;
         padding: 15px !important;
         margin: 8px 0 !important;
         border: 1px solid rgba(167, 139, 250, 0.3) !important;
     }
-
-    /* Chat input */
     .stChatInput input {
         border-radius: 25px !important;
         border: 2px solid #7c3aed !important;
         padding: 15px 20px !important;
         font-size: 15px !important;
     }
-
-    /* Sidebar */
     [data-testid="stSidebar"] {
         background: linear-gradient(180deg, #ede9fe, #ddd6fe) !important;
         border-right: 1px solid rgba(167, 139, 250, 0.3) !important;
@@ -151,8 +133,6 @@ st.markdown("""
     [data-testid="stSidebar"] label {
         color: #1e1b4b !important;
     }
-
-    /* Buttons */
     .stButton button {
         background: linear-gradient(90deg, #7c3aed, #4f46e5) !important;
         color: white !important;
@@ -161,8 +141,6 @@ st.markdown("""
         font-weight: 600 !important;
         width: 100% !important;
     }
-
-    /* Typing animation */
     .typing-animation {
         display: flex;
         gap: 5px;
@@ -182,18 +160,41 @@ st.markdown("""
         0%, 60%, 100% { transform: translateY(0); }
         30% { transform: translateY(-10px); }
     }
-
-    /* Scrollbar */
+    .mic-button {
+        background: linear-gradient(90deg, #7c3aed, #4f46e5);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 25px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 0 20px rgba(124,58,237,0.4);
+        width: 100%;
+        margin: 5px 0;
+        transition: all 0.3s;
+    }
+    .mic-button:hover {
+        box-shadow: 0 0 30px rgba(124,58,237,0.7);
+        transform: translateY(-2px);
+    }
+    .mic-button.recording {
+        background: linear-gradient(90deg, #ef4444, #dc2626);
+        animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+        70% { box-shadow: 0 0 0 15px rgba(239,68,68,0); }
+        100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+    }
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: #f0f4ff; }
     ::-webkit-scrollbar-thumb {
         background: #7c3aed;
         border-radius: 10px;
     }
-
     </style>
 
-    <!-- Beautiful Navbar -->
     <div class="navbar">
         <div class="navbar-left">
             <div class="navbar-logo">H</div>
@@ -221,7 +222,7 @@ def speak_text(text):
     window.speechSynthesis.speak(msg);
     </script>
     """
-    st.components.v1.html(js, height=0)
+    components.html(js, height=0)
 
 def show_typing():
     st.markdown("""
@@ -234,6 +235,168 @@ def show_typing():
             </span>
         </div>
     """, unsafe_allow_html=True)
+
+def voice_input_component():
+    voice_html = """
+    <div style="text-align:center; padding:10px;">
+        <button class="mic-button" id="micBtn" onclick="toggleRecording()">
+            🎤 Press to Speak
+        </button>
+        <p id="status" style="color:#7c3aed; font-size:13px; margin-top:8px;">
+            Click the button and speak your message
+        </p>
+        <div id="transcript-box" style="
+            background:white;
+            border:2px solid #7c3aed;
+            border-radius:15px;
+            padding:10px 15px;
+            margin-top:8px;
+            min-height:40px;
+            font-size:14px;
+            color:#1e1b4b;
+            display:none;
+        "></div>
+        <button id="sendBtn" onclick="sendVoice()" style="
+            display:none;
+            background: linear-gradient(90deg, #7c3aed, #4f46e5);
+            color:white;
+            border:none;
+            border-radius:20px;
+            padding:10px 25px;
+            font-size:14px;
+            font-weight:600;
+            cursor:pointer;
+            margin-top:8px;
+            width:100%;
+        ">
+            Send Voice Message
+        </button>
+    </div>
+
+    <style>
+    .mic-button {
+        background: linear-gradient(90deg, #7c3aed, #4f46e5);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 25px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 0 20px rgba(124,58,237,0.4);
+        width: 100%;
+        margin: 5px 0;
+        transition: all 0.3s;
+    }
+    .mic-button.recording {
+        background: linear-gradient(90deg, #ef4444, #dc2626) !important;
+    }
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+        70% { box-shadow: 0 0 0 15px rgba(239,68,68,0); }
+        100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+    }
+    </style>
+
+    <script>
+    let recognition;
+    let isRecording = false;
+    let finalTranscript = '';
+
+    function toggleRecording() {
+        if (!isRecording) {
+            startRecording();
+        } else {
+            stopRecording();
+        }
+    }
+
+    function startRecording() {
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            document.getElementById('status').innerHTML =
+                'Sorry! Your browser does not support voice. Please use Chrome.';
+            return;
+        }
+
+        const SpeechRecognition = window.SpeechRecognition ||
+                                   window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        recognition.onstart = function() {
+            isRecording = true;
+            document.getElementById('micBtn').innerHTML = '🔴 Recording... Click to Stop';
+            document.getElementById('micBtn').classList.add('recording');
+            document.getElementById('status').innerHTML =
+                'Listening... speak now!';
+            document.getElementById('transcript-box').style.display = 'block';
+            document.getElementById('sendBtn').style.display = 'none';
+            finalTranscript = '';
+        };
+
+        recognition.onresult = function(event) {
+            let interimTranscript = '';
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                if (event.results[i].isFinal) {
+                    finalTranscript += event.results[i][0].transcript;
+                } else {
+                    interimTranscript += event.results[i][0].transcript;
+                }
+            }
+            document.getElementById('transcript-box').innerHTML =
+                finalTranscript + '<span style="color:#9ca3af">' +
+                interimTranscript + '</span>';
+        };
+
+        recognition.onend = function() {
+            isRecording = false;
+            document.getElementById('micBtn').innerHTML = '🎤 Press to Speak Again';
+            document.getElementById('micBtn').classList.remove('recording');
+            if (finalTranscript) {
+                document.getElementById('status').innerHTML =
+                    'Voice captured! Click Send to chat.';
+                document.getElementById('sendBtn').style.display = 'block';
+            } else {
+                document.getElementById('status').innerHTML =
+                    'Nothing heard. Try again!';
+            }
+        };
+
+        recognition.onerror = function(event) {
+            document.getElementById('status').innerHTML =
+                'Error: ' + event.error + '. Please try again.';
+            isRecording = false;
+            document.getElementById('micBtn').innerHTML = '🎤 Press to Speak';
+            document.getElementById('micBtn').classList.remove('recording');
+        };
+
+        recognition.start();
+    }
+
+    function stopRecording() {
+        if (recognition) {
+            recognition.stop();
+        }
+    }
+
+    function sendVoice() {
+        if (finalTranscript) {
+            window.parent.postMessage({
+                type: 'voice_message',
+                text: finalTranscript
+            }, '*');
+            document.getElementById('transcript-box').innerHTML = '';
+            document.getElementById('sendBtn').style.display = 'none';
+            document.getElementById('status').innerHTML =
+                'Message sent! You can speak again.';
+            document.getElementById('micBtn').innerHTML = '🎤 Press to Speak';
+        }
+    }
+    </script>
+    """
+    return components.html(voice_html, height=220)
 
 SYSTEM_PROMPT = """You are Hadie's AI Assistant — a smart, friendly and helpful AI.
 You can help with absolutely everything including:
@@ -251,7 +414,6 @@ You can help with absolutely everything including:
 - Islamic knowledge
 - And absolutely anything else!
 Always give clear, helpful and friendly answers.
-If someone asks a hard question, think carefully and give the best answer.
 Be warm, encouraging and supportive."""
 
 with st.sidebar:
@@ -316,18 +478,11 @@ if "messages" not in st.session_state:
         **Hello! Welcome to Hadie's AI Chatbot!**
 
         I am your personal smart AI assistant!
-        I can help you with **anything** you need:
 
-        - General knowledge and facts
-        - Math and science questions
-        - Coding and programming
-        - Cooking recipes
-        - Health and fitness tips
-        - Islamic knowledge
-        - Hard and complex questions
-        - And absolutely anything else!
+        You can **type** your message below OR
+        use the **voice button** to speak to me!
 
-        **Just type your question below — I am ready to help!**
+        I can help you with anything — just ask!
         """)
 
 for message in st.session_state.messages:
@@ -336,18 +491,16 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"], avatar=avatar):
         st.markdown(message["content"])
 
-if prompt := st.chat_input("Ask me anything..."):
-    with st.chat_message("user"):
-        st.markdown(prompt)
+if "voice_text" not in st.session_state:
+    st.session_state.voice_text = ""
 
+def get_ai_response(prompt):
     client = Groq(api_key=st.secrets["GROQ_API_KEY"])
-
     with st.chat_message("assistant",
         avatar="https://placehold.co/100x100/7c3aed/white?text=H&font=montserrat"):
         typing_placeholder = st.empty()
         with typing_placeholder:
             show_typing()
-
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[
@@ -361,9 +514,22 @@ if prompt := st.chat_input("Ask me anything..."):
         reply = response.choices[0].message.content
         typing_placeholder.empty()
         st.markdown(reply)
-
     if voice_enabled:
         speak_text(reply)
-
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.session_state.messages.append({"role": "assistant", "content": reply})
+
+st.markdown("### 🎤 Voice Input")
+st.markdown(
+    "<p style='color:#7c3aed; font-size:13px;'>"
+    "Click the mic button and speak — your voice will be converted to text!</p>",
+    unsafe_allow_html=True
+)
+voice_input_component()
+
+st.markdown("### 💬 Or Type Your Message")
+if prompt := st.chat_input("Type your message here..."):
+    with st.chat_message("user"):
+        st.markdown(prompt)
+    get_ai_response(prompt)
+    st.rerun()
