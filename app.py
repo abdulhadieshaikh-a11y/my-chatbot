@@ -19,7 +19,6 @@ st.markdown("""
         background: linear-gradient(135deg, #f0f4ff, #e8f0fe, #f5f0ff);
         background-attachment: fixed;
     }
-
     .navbar {
         position: fixed;
         top: 0;
@@ -31,7 +30,7 @@ st.markdown("""
         display: flex;
         align-items: center;
         justify-content: space-between;
-        box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+        box-shadow: 0 4px 20px rgba(124,58,237,0.4);
     }
     .navbar-logo {
         width: 45px;
@@ -44,7 +43,6 @@ st.markdown("""
         font-size: 22px;
         font-weight: 900;
         color: #7c3aed;
-        box-shadow: 0 0 15px rgba(255,255,255,0.5);
     }
     .navbar-title {
         font-size: 22px;
@@ -115,7 +113,7 @@ st.markdown("""
         border-radius: 20px !important;
         padding: 15px !important;
         margin: 8px 0 !important;
-        border: 1px solid rgba(167, 139, 250, 0.3) !important;
+        border: 1px solid rgba(167,139,250,0.3) !important;
     }
     .stChatInput input {
         border-radius: 25px !important;
@@ -125,7 +123,7 @@ st.markdown("""
     }
     [data-testid="stSidebar"] {
         background: linear-gradient(180deg, #ede9fe, #ddd6fe) !important;
-        border-right: 1px solid rgba(167, 139, 250, 0.3) !important;
+        border-right: 1px solid rgba(167,139,250,0.3) !important;
         margin-top: 70px;
     }
     [data-testid="stSidebar"] p,
@@ -160,33 +158,6 @@ st.markdown("""
         0%, 60%, 100% { transform: translateY(0); }
         30% { transform: translateY(-10px); }
     }
-    .mic-button {
-        background: linear-gradient(90deg, #7c3aed, #4f46e5);
-        color: white;
-        border: none;
-        border-radius: 50px;
-        padding: 12px 25px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 0 20px rgba(124,58,237,0.4);
-        width: 100%;
-        margin: 5px 0;
-        transition: all 0.3s;
-    }
-    .mic-button:hover {
-        box-shadow: 0 0 30px rgba(124,58,237,0.7);
-        transform: translateY(-2px);
-    }
-    .mic-button.recording {
-        background: linear-gradient(90deg, #ef4444, #dc2626);
-        animation: pulse 1s infinite;
-    }
-    @keyframes pulse {
-        0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
-        70% { box-shadow: 0 0 0 15px rgba(239,68,68,0); }
-        100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
-    }
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: #f0f4ff; }
     ::-webkit-scrollbar-thumb {
@@ -212,6 +183,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
+
 def speak_text(text):
     js = f"""
     <script>
@@ -223,6 +195,7 @@ def speak_text(text):
     </script>
     """
     components.html(js, height=0)
+
 
 def show_typing():
     st.markdown("""
@@ -236,167 +209,6 @@ def show_typing():
         </div>
     """, unsafe_allow_html=True)
 
-def voice_input_component():
-    voice_html = """
-    <div style="text-align:center; padding:10px;">
-        <button class="mic-button" id="micBtn" onclick="toggleRecording()">
-            🎤 Press to Speak
-        </button>
-        <p id="status" style="color:#7c3aed; font-size:13px; margin-top:8px;">
-            Click the button and speak your message
-        </p>
-        <div id="transcript-box" style="
-            background:white;
-            border:2px solid #7c3aed;
-            border-radius:15px;
-            padding:10px 15px;
-            margin-top:8px;
-            min-height:40px;
-            font-size:14px;
-            color:#1e1b4b;
-            display:none;
-        "></div>
-        <button id="sendBtn" onclick="sendVoice()" style="
-            display:none;
-            background: linear-gradient(90deg, #7c3aed, #4f46e5);
-            color:white;
-            border:none;
-            border-radius:20px;
-            padding:10px 25px;
-            font-size:14px;
-            font-weight:600;
-            cursor:pointer;
-            margin-top:8px;
-            width:100%;
-        ">
-            Send Voice Message
-        </button>
-    </div>
-
-    <style>
-    .mic-button {
-        background: linear-gradient(90deg, #7c3aed, #4f46e5);
-        color: white;
-        border: none;
-        border-radius: 50px;
-        padding: 12px 25px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 0 20px rgba(124,58,237,0.4);
-        width: 100%;
-        margin: 5px 0;
-        transition: all 0.3s;
-    }
-    .mic-button.recording {
-        background: linear-gradient(90deg, #ef4444, #dc2626) !important;
-    }
-    @keyframes pulse {
-        0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
-        70% { box-shadow: 0 0 0 15px rgba(239,68,68,0); }
-        100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
-    }
-    </style>
-
-    <script>
-    let recognition;
-    let isRecording = false;
-    let finalTranscript = '';
-
-    function toggleRecording() {
-        if (!isRecording) {
-            startRecording();
-        } else {
-            stopRecording();
-        }
-    }
-
-    function startRecording() {
-        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-            document.getElementById('status').innerHTML =
-                'Sorry! Your browser does not support voice. Please use Chrome.';
-            return;
-        }
-
-        const SpeechRecognition = window.SpeechRecognition ||
-                                   window.webkitSpeechRecognition;
-        recognition = new SpeechRecognition();
-        recognition.continuous = false;
-        recognition.interimResults = true;
-        recognition.lang = 'en-US';
-
-        recognition.onstart = function() {
-            isRecording = true;
-            document.getElementById('micBtn').innerHTML = '🔴 Recording... Click to Stop';
-            document.getElementById('micBtn').classList.add('recording');
-            document.getElementById('status').innerHTML =
-                'Listening... speak now!';
-            document.getElementById('transcript-box').style.display = 'block';
-            document.getElementById('sendBtn').style.display = 'none';
-            finalTranscript = '';
-        };
-
-        recognition.onresult = function(event) {
-            let interimTranscript = '';
-            for (let i = event.resultIndex; i < event.results.length; i++) {
-                if (event.results[i].isFinal) {
-                    finalTranscript += event.results[i][0].transcript;
-                } else {
-                    interimTranscript += event.results[i][0].transcript;
-                }
-            }
-            document.getElementById('transcript-box').innerHTML =
-                finalTranscript + '<span style="color:#9ca3af">' +
-                interimTranscript + '</span>';
-        };
-
-        recognition.onend = function() {
-            isRecording = false;
-            document.getElementById('micBtn').innerHTML = '🎤 Press to Speak Again';
-            document.getElementById('micBtn').classList.remove('recording');
-            if (finalTranscript) {
-                document.getElementById('status').innerHTML =
-                    'Voice captured! Click Send to chat.';
-                document.getElementById('sendBtn').style.display = 'block';
-            } else {
-                document.getElementById('status').innerHTML =
-                    'Nothing heard. Try again!';
-            }
-        };
-
-        recognition.onerror = function(event) {
-            document.getElementById('status').innerHTML =
-                'Error: ' + event.error + '. Please try again.';
-            isRecording = false;
-            document.getElementById('micBtn').innerHTML = '🎤 Press to Speak';
-            document.getElementById('micBtn').classList.remove('recording');
-        };
-
-        recognition.start();
-    }
-
-    function stopRecording() {
-        if (recognition) {
-            recognition.stop();
-        }
-    }
-
-    function sendVoice() {
-        if (finalTranscript) {
-            window.parent.postMessage({
-                type: 'voice_message',
-                text: finalTranscript
-            }, '*');
-            document.getElementById('transcript-box').innerHTML = '';
-            document.getElementById('sendBtn').style.display = 'none';
-            document.getElementById('status').innerHTML =
-                'Message sent! You can speak again.';
-            document.getElementById('micBtn').innerHTML = '🎤 Press to Speak';
-        }
-    }
-    </script>
-    """
-    return components.html(voice_html, height=220)
 
 SYSTEM_PROMPT = """You are Hadie's AI Assistant — a smart, friendly and helpful AI.
 You can help with absolutely everything including:
@@ -416,22 +228,21 @@ You can help with absolutely everything including:
 Always give clear, helpful and friendly answers.
 Be warm, encouraging and supportive."""
 
+# Sidebar
 with st.sidebar:
     st.markdown("""
-        <div style='text-align:center; padding: 10px;'>
+        <div style='text-align:center; padding:10px;'>
             <img src='https://placehold.co/100x100/7c3aed/white?text=H&font=montserrat'
             width='90' style='border-radius:50%;
-            box-shadow: 0 0 20px rgba(124,58,237,0.5);'/>
+            box-shadow:0 0 20px rgba(124,58,237,0.5);'/>
             <h2 style='color:#7c3aed; margin-top:10px;'>Hadie's AI</h2>
             <p style='color:#4f46e5; font-size:13px;'>Your Smart Assistant</p>
         </div>
     """, unsafe_allow_html=True)
-
     st.markdown("<hr style='border-color:#7c3aed;'>", unsafe_allow_html=True)
     st.markdown("### Settings")
-    voice_enabled = st.toggle("Voice Reply", value=True)
+    voice_reply = st.toggle("Voice Reply", value=True)
     st.markdown("<hr style='border-color:#7c3aed;'>", unsafe_allow_html=True)
-
     st.markdown("### I can help you with:")
     topics = [
         "General Knowledge",
@@ -449,11 +260,9 @@ with st.sidebar:
     ]
     for topic in topics:
         st.markdown(
-            f"<p style='margin:2px 0; font-size:13px;"
-            f"color:#1e1b4b;'>✅ {topic}</p>",
+            f"<p style='margin:2px 0;font-size:13px;color:#1e1b4b;'>✅ {topic}</p>",
             unsafe_allow_html=True
         )
-
     st.markdown("<hr style='border-color:#7c3aed;'>", unsafe_allow_html=True)
     if st.button("Clear Chat History"):
         st.session_state.messages = []
@@ -464,40 +273,42 @@ with st.sidebar:
         </div>
     """, unsafe_allow_html=True)
 
+# Title
 st.markdown('<p class="title-style">Hadie AI Chatbot</p>',
-           unsafe_allow_html=True)
+            unsafe_allow_html=True)
 st.markdown('<p class="subtitle-style">Your Personal Smart AI Assistant</p>',
-           unsafe_allow_html=True)
+            unsafe_allow_html=True)
 st.markdown('<hr class="glow-divider">', unsafe_allow_html=True)
 
+# Initialize messages
 if "messages" not in st.session_state:
     st.session_state.messages = []
     with st.chat_message("assistant",
-        avatar="https://placehold.co/100x100/7c3aed/white?text=H&font=montserrat"):
+            avatar="https://placehold.co/100x100/7c3aed/white?text=H&font=montserrat"):
         st.markdown("""
         **Hello! Welcome to Hadie's AI Chatbot!**
 
         I am your personal smart AI assistant!
 
         You can **type** your message below OR
-        use the **voice button** to speak to me!
+        click the **mic button** to speak to me!
 
         I can help you with anything — just ask!
         """)
 
+# Show chat history
 for message in st.session_state.messages:
     avatar = "https://placehold.co/100x100/7c3aed/white?text=H&font=montserrat" \
         if message["role"] == "assistant" else None
     with st.chat_message(message["role"], avatar=avatar):
         st.markdown(message["content"])
 
-if "voice_text" not in st.session_state:
-    st.session_state.voice_text = ""
 
-def get_ai_response(prompt):
+# Get AI response
+def get_ai_response(user_prompt):
     client = Groq(api_key=st.secrets["GROQ_API_KEY"])
     with st.chat_message("assistant",
-        avatar="https://placehold.co/100x100/7c3aed/white?text=H&font=montserrat"):
+            avatar="https://placehold.co/100x100/7c3aed/white?text=H&font=montserrat"):
         typing_placeholder = st.empty()
         with typing_placeholder:
             show_typing()
@@ -507,28 +318,197 @@ def get_ai_response(prompt):
                 {"role": "system", "content": SYSTEM_PROMPT},
                 *[{"role": m["role"], "content": m["content"]}
                   for m in st.session_state.messages],
-                {"role": "user", "content": prompt}
+                {"role": "user", "content": user_prompt}
             ],
             max_tokens=2048
         )
         reply = response.choices[0].message.content
         typing_placeholder.empty()
         st.markdown(reply)
-    if voice_enabled:
+    if voice_reply:
         speak_text(reply)
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    st.session_state.messages.append({"role": "assistant", "content": reply})
+    st.session_state.messages.append(
+        {"role": "user", "content": user_prompt})
+    st.session_state.messages.append(
+        {"role": "assistant", "content": reply})
 
-st.markdown("### 🎤 Voice Input")
-st.markdown(
-    "<p style='color:#7c3aed; font-size:13px;'>"
-    "Click the mic button and speak — your voice will be converted to text!</p>",
-    unsafe_allow_html=True
-)
-voice_input_component()
 
-st.markdown("### 💬 Or Type Your Message")
-if prompt := st.chat_input("Type your message here..."):
+# Voice input component
+st.markdown("""
+    <div style='background:white; border-radius:20px;
+    border:2px solid #7c3aed; padding:15px; margin-bottom:15px;
+    box-shadow:0 0 15px rgba(124,58,237,0.1);'>
+        <p style='color:#7c3aed; font-weight:600;
+        font-size:14px; margin:0 0 10px 0;'>
+        🎤 Voice Input — Click mic and speak!</p>
+""", unsafe_allow_html=True)
+
+components.html("""
+    <div style="text-align:center;">
+        <button id="micBtn" onclick="toggleRecording()" style="
+            background: linear-gradient(90deg, #7c3aed, #4f46e5);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 30px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 10px;
+        ">🎤 Click to Speak</button>
+
+        <div id="statusText" style="
+            color: #7c3aed;
+            font-size: 13px;
+            margin: 5px 0;
+        ">Press the button and speak in English</div>
+
+        <div id="transcriptBox" style="
+            background: #f5f0ff;
+            border: 1.5px solid #7c3aed;
+            border-radius: 12px;
+            padding: 10px;
+            margin: 8px 0;
+            min-height: 35px;
+            font-size: 14px;
+            color: #1e1b4b;
+            display: none;
+            text-align: left;
+        "></div>
+
+        <button id="sendBtn" onclick="sendMessage()" style="
+            display: none;
+            background: linear-gradient(90deg, #f472b6, #9333ea);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 30px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 5px;
+        ">Send This Message</button>
+    </div>
+
+    <script>
+    let recognition;
+    let isRecording = false;
+    let spokenText = '';
+
+    function toggleRecording() {
+        if (!isRecording) {
+            startRecording();
+        } else {
+            stopRecording();
+        }
+    }
+
+    function startRecording() {
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SR) {
+            document.getElementById('statusText').innerText =
+                'Please use Google Chrome for voice!';
+            return;
+        }
+        recognition = new SR();
+        recognition.lang = 'en-US';
+        recognition.interimResults = true;
+        recognition.continuous = false;
+
+        recognition.onstart = () => {
+            isRecording = true;
+            spokenText = '';
+            document.getElementById('micBtn').innerText = '🔴 Recording... Click to Stop';
+            document.getElementById('micBtn').style.background =
+                'linear-gradient(90deg, #ef4444, #dc2626)';
+            document.getElementById('statusText').innerText =
+                'Listening... speak now!';
+            document.getElementById('transcriptBox').style.display = 'block';
+            document.getElementById('transcriptBox').innerText = '';
+            document.getElementById('sendBtn').style.display = 'none';
+        };
+
+        recognition.onresult = (event) => {
+            let interim = '';
+            spokenText = '';
+            for (let i = 0; i < event.results.length; i++) {
+                if (event.results[i].isFinal) {
+                    spokenText += event.results[i][0].transcript;
+                } else {
+                    interim += event.results[i][0].transcript;
+                }
+            }
+            document.getElementById('transcriptBox').innerText =
+                spokenText || interim;
+        };
+
+        recognition.onend = () => {
+            isRecording = false;
+            document.getElementById('micBtn').innerText = '🎤 Click to Speak Again';
+            document.getElementById('micBtn').style.background =
+                'linear-gradient(90deg, #7c3aed, #4f46e5)';
+            if (spokenText) {
+                document.getElementById('statusText').innerText =
+                    'Voice captured! Click Send to send your message.';
+                document.getElementById('sendBtn').style.display = 'block';
+            } else {
+                document.getElementById('statusText').innerText =
+                    'Did not hear anything. Please try again!';
+            }
+        };
+
+        recognition.onerror = (event) => {
+            isRecording = false;
+            document.getElementById('micBtn').innerText = '🎤 Click to Speak';
+            document.getElementById('micBtn').style.background =
+                'linear-gradient(90deg, #7c3aed, #4f46e5)';
+            document.getElementById('statusText').innerText =
+                'Error: ' + event.error + '. Try again!';
+        };
+
+        recognition.start();
+    }
+
+    function stopRecording() {
+        if (recognition) recognition.stop();
+    }
+
+    function sendMessage() {
+        if (spokenText) {
+            const input = window.parent.document.querySelector(
+                '[data-testid="stChatInput"] textarea'
+            );
+            if (input) {
+                const setter = Object.getOwnPropertyDescriptor(
+                    window.HTMLTextAreaElement.prototype, 'value'
+                ).set;
+                setter.call(input, spokenText);
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+                setTimeout(() => {
+                    input.dispatchEvent(new KeyboardEvent('keydown', {
+                        key: 'Enter',
+                        code: 'Enter',
+                        bubbles: true
+                    }));
+                }, 300);
+                document.getElementById('transcriptBox').innerText = '';
+                document.getElementById('sendBtn').style.display = 'none';
+                document.getElementById('statusText').innerText =
+                    'Message sent! You can speak again.';
+                document.getElementById('micBtn').innerText = '🎤 Click to Speak';
+                spokenText = '';
+            }
+        }
+    }
+    </script>
+""", height=220)
+
+st.markdown("</div>", unsafe_allow_html=True)
+
+# Text chat input
+if prompt := st.chat_input("Or type your message here..."):
     with st.chat_message("user"):
         st.markdown(prompt)
     get_ai_response(prompt)
