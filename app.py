@@ -1,3 +1,4 @@
+
 import streamlit as st
 from groq import Groq
 import streamlit.components.v1 as components
@@ -10,24 +11,20 @@ st.set_page_config(
 
 st.markdown("""
     <style>
-
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
-
     .stApp {
         background: linear-gradient(135deg, #f0f4ff, #e8f0fe, #f5f0ff);
         background-attachment: fixed;
     }
-
-    /* PROFESSIONAL NAVBAR */
     .navbar {
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
         z-index: 999;
-        background: rgba(255, 255, 255, 0.95);
+        background: rgba(255,255,255,0.95);
         backdrop-filter: blur(20px);
         padding: 0 40px;
         height: 65px;
@@ -81,17 +78,12 @@ st.markdown("""
         font-size: 12px;
         font-weight: 600;
         color: #6b7280;
-        cursor: pointer;
-        transition: all 0.2s;
         border: 1px solid transparent;
     }
     .navbar-pill:hover {
         background: #f5f0ff;
         color: #7c3aed;
         border-color: #e9d5ff;
-    }
-    .navbar-pill-icon {
-        font-size: 14px;
     }
     .navbar-right {
         display: flex;
@@ -117,7 +109,7 @@ st.markdown("""
     }
     .try-btn {
         background: linear-gradient(90deg, #7c3aed, #4f46e5);
-        color: white !important;
+        color: white;
         border: none;
         border-radius: 20px;
         padding: 8px 20px;
@@ -126,8 +118,6 @@ st.markdown("""
         cursor: pointer;
         box-shadow: 0 4px 15px rgba(124,58,237,0.3);
     }
-
-    /* HERO SECTION */
     .hero {
         text-align: center;
         padding: 20px 20px 10px 20px;
@@ -159,8 +149,6 @@ st.markdown("""
         color: #6b7280;
         margin-bottom: 20px;
     }
-
-    /* CAPABILITIES PILLS */
     .caps-row {
         display: flex;
         flex-wrap: wrap;
@@ -181,8 +169,6 @@ st.markdown("""
         color: #4f46e5;
         box-shadow: 0 2px 8px rgba(124,58,237,0.1);
     }
-
-    /* STATS ROW */
     .stats-row {
         display: flex;
         justify-content: center;
@@ -190,9 +176,7 @@ st.markdown("""
         margin-bottom: 20px;
         flex-wrap: wrap;
     }
-    .stat-item {
-        text-align: center;
-    }
+    .stat-item { text-align: center; }
     .stat-number {
         font-size: 22px;
         font-weight: 900;
@@ -205,16 +189,13 @@ st.markdown("""
         color: #9ca3af;
         font-weight: 500;
     }
-
-    /* DIVIDER */
     .glow-divider {
         height: 1px;
-        background: linear-gradient(90deg, transparent, #a78bfa, #60a5fa, #f472b6, transparent);
+        background: linear-gradient(90deg, transparent,
+            #a78bfa, #60a5fa, #f472b6, transparent);
         border: none;
         margin: 5px 0 15px 0;
     }
-
-    /* CHAT */
     .stChatMessage {
         border-radius: 20px !important;
         padding: 15px !important;
@@ -230,12 +211,6 @@ st.markdown("""
         font-size: 15px !important;
         background: white !important;
     }
-    .stChatInput textarea:focus {
-        border-color: #7c3aed !important;
-        box-shadow: 0 0 0 3px rgba(124,58,237,0.1) !important;
-    }
-
-    /* SIDEBAR */
     [data-testid="stSidebar"] {
         background: white !important;
         border-right: 1px solid #f3f4f6 !important;
@@ -246,7 +221,6 @@ st.markdown("""
     [data-testid="stSidebar"] label {
         color: #374151 !important;
     }
-
     .sidebar-section {
         background: #f9fafb;
         border-radius: 12px;
@@ -280,8 +254,6 @@ st.markdown("""
         width: 24px;
         text-align: center;
     }
-
-    /* BUTTONS */
     .stButton button {
         background: linear-gradient(90deg, #7c3aed, #4f46e5) !important;
         color: white !important;
@@ -291,8 +263,6 @@ st.markdown("""
         width: 100% !important;
         padding: 10px !important;
     }
-
-    /* TYPING */
     .typing-animation {
         display: flex;
         gap: 5px;
@@ -312,23 +282,19 @@ st.markdown("""
         0%, 60%, 100% { transform: translateY(0); }
         30% { transform: translateY(-8px); }
     }
-
     .block-container {
         padding-top: 75px !important;
         max-width: 780px;
         margin: auto;
     }
-
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: #f9fafb; }
     ::-webkit-scrollbar-thumb {
         background: #ddd6fe;
         border-radius: 10px;
     }
-
     </style>
 
-    <!-- PROFESSIONAL NAVBAR -->
     <div class="navbar">
         <div class="navbar-left">
             <div class="navbar-logo">H</div>
@@ -338,21 +304,11 @@ st.markdown("""
             </div>
         </div>
         <div class="navbar-center">
-            <div class="navbar-pill">
-                <span class="navbar-pill-icon">🧠</span> Smart AI
-            </div>
-            <div class="navbar-pill">
-                <span class="navbar-pill-icon">💻</span> Coding
-            </div>
-            <div class="navbar-pill">
-                <span class="navbar-pill-icon">📐</span> Math
-            </div>
-            <div class="navbar-pill">
-                <span class="navbar-pill-icon">🌍</span> Knowledge
-            </div>
-            <div class="navbar-pill">
-                <span class="navbar-pill-icon">🎤</span> Voice
-            </div>
+            <div class="navbar-pill">🧠 Smart AI</div>
+            <div class="navbar-pill">💻 Coding</div>
+            <div class="navbar-pill">📐 Math</div>
+            <div class="navbar-pill">🌍 Knowledge</div>
+            <div class="navbar-pill">🎤 Voice</div>
         </div>
         <div class="navbar-right">
             <span class="status-dot"></span>
@@ -409,7 +365,6 @@ Always give clear, helpful and friendly answers.
 Format code properly with code blocks.
 Be warm, encouraging and supportive."""
 
-# SIDEBAR
 with st.sidebar:
     st.markdown("""
         <div style='text-align:center; padding:15px 10px;'>
@@ -430,32 +385,34 @@ with st.sidebar:
         align-items:center; gap:8px;'>
             <span style='color:#10b981; font-size:18px;'>●</span>
             <span style='color:#065f46; font-size:13px;
-            font-weight:600;'>AI is Online & Ready</span>
+            font-weight:600;'>AI is Online and Ready</span>
         </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("<div class='sidebar-section'>", unsafe_allow_html=True)
+    st.markdown("<div class='sidebar-section'>",
+                unsafe_allow_html=True)
     st.markdown("<div class='sidebar-title'>Settings</div>",
                 unsafe_allow_html=True)
     voice_reply = st.toggle("Voice Reply", value=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
     skills = [
-        ("💻", "Python & Coding"),
-        ("📐", "Math & Calculations"),
-        ("🔬", "Science & Research"),
-        ("✍️", "Writing & Essays"),
+        ("💻", "Python and Coding"),
+        ("📐", "Math and Calculations"),
+        ("🔬", "Science and Research"),
+        ("✍️", "Writing and Essays"),
         ("🍳", "Cooking Recipes"),
-        ("💪", "Health & Fitness"),
-        ("🌍", "Travel & Places"),
+        ("💪", "Health and Fitness"),
+        ("🌍", "Travel and Places"),
         ("🕌", "Islamic Knowledge"),
-        ("💼", "Business & Finance"),
-        ("🗣️", "Urdu & English"),
+        ("💼", "Business and Finance"),
+        ("🗣️", "Urdu and English"),
         ("🧠", "General Knowledge"),
         ("❓", "Hard Questions"),
     ]
 
-    st.markdown("<div class='sidebar-section'>", unsafe_allow_html=True)
+    st.markdown("<div class='sidebar-section'>",
+                unsafe_allow_html=True)
     st.markdown("<div class='sidebar-title'>What I Can Do</div>",
                 unsafe_allow_html=True)
     for icon, skill in skills:
@@ -478,7 +435,6 @@ with st.sidebar:
         </div>
     """, unsafe_allow_html=True)
 
-# HERO SECTION
 st.markdown("""
     <div class="hero">
         <div class="hero-badge">
@@ -521,16 +477,15 @@ st.markdown("""
     <hr class="glow-divider">
 """, unsafe_allow_html=True)
 
-# CHAT MESSAGES
 if "messages" not in st.session_state:
     st.session_state.messages = []
     with st.chat_message("assistant",
             avatar="https://placehold.co/100x100/7c3aed/white?text=H&font=montserrat"):
         st.markdown("""
-        **Hello! Welcome to Hadie's AI Chatbot!** 👋
+        **Hello! Welcome to Hadie's AI Chatbot!**
 
         I am your personal professional AI assistant!
-        I can help you with **anything** — just ask!
+        I can help you with anything — just ask!
 
         **Try asking me:**
         - Write a Python program for me
@@ -539,7 +494,7 @@ if "messages" not in st.session_state:
         - Give me a chicken recipe
         - What is the capital of Japan?
 
-        **Type below or click 🎤 to speak!**
+        **Type below or click the mic button to speak!**
         """)
 
 for message in st.session_state.messages:
@@ -547,9 +502,6 @@ for message in st.session_state.messages:
         if message["role"] == "assistant" else None
     with st.chat_message(message["role"], avatar=avatar):
         st.markdown(message["content"])
-
-if "voice_input" not in st.session_state:
-    st.session_state.voice_input = ""
 
 
 def get_ai_response(user_prompt):
@@ -580,7 +532,6 @@ def get_ai_response(user_prompt):
         {"role": "assistant", "content": reply})
 
 
-# INPUT ROW
 prompt = st.chat_input("Ask me anything...")
 
 components.html("""
@@ -595,13 +546,11 @@ components.html("""
         background: linear-gradient(135deg, #7c3aed, #4f46e5);
         border: none;
         cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         font-size: 20px;
         box-shadow: 0 4px 20px rgba(124,58,237,0.4);
         z-index: 9999;
         transition: all 0.2s;
+        color: white;
     }
     .mic-fab:hover {
         transform: scale(1.1);
@@ -612,7 +561,7 @@ components.html("""
         animation: ripple 1s infinite;
     }
     @keyframes ripple {
-        0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+        0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
         70% { box-shadow: 0 0 0 15px rgba(239,68,68,0); }
         100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
     }
@@ -658,7 +607,6 @@ components.html("""
             showStatus('Use Chrome browser!');
             return;
         }
-
         recognition = new SR();
         recognition.lang = 'en-US';
         recognition.interimResults = true;
@@ -689,9 +637,8 @@ components.html("""
             isListening = false;
             document.getElementById('micBtn').classList.remove('listening');
             document.getElementById('micBtn').innerText = '🎤';
-
             if (spokenText) {
-                showStatus('Sending: ' + spokenText);
+                showStatus('Sending message...');
                 sendToChat(spokenText);
                 setTimeout(() => hideStatus(), 2000);
             } else {
@@ -746,168 +693,6 @@ components.html("""
     }
     </script>
 """, height=0)
-
-if prompt:
-    with st.chat_message("user"):
-        st.markdown(prompt)
-    get_ai_response(prompt)
-    st.rerun()
-        <div id="voiceBox" style="
-            position: fixed;
-            bottom: 90px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            border: 1.5px solid #e9d5ff;
-            border-radius: 20px;
-            padding: 20px;
-            width: 340px;
-            box-shadow: 0 10px 40px rgba(124,58,237,0.2);
-            z-index: 9999;
-            text-align: center;
-        ">
-            <div style="font-size:16px; font-weight:700;
-            color:#7c3aed; margin-bottom:12px;">
-                🎤 Voice Input</div>
-
-            <button id="micBtn" onclick="startVoice()" style="
-                background: linear-gradient(90deg, #7c3aed, #4f46e5);
-                color: white;
-                border: none;
-                border-radius: 50px;
-                padding: 12px 30px;
-                font-size: 14px;
-                font-weight: 600;
-                cursor: pointer;
-                width: 100%;
-                margin-bottom: 10px;
-            ">🎤 Start Speaking</button>
-
-            <div id="statusText" style="
-                color: #9ca3af;
-                font-size: 12px;
-                margin: 5px 0;
-            ">Click Start Speaking and talk!</div>
-
-            <div id="transcriptBox" style="
-                background: #f5f0ff;
-                border: 1px solid #e9d5ff;
-                border-radius: 12px;
-                padding: 10px;
-                margin: 8px 0;
-                min-height: 40px;
-                font-size: 13px;
-                color: #1e1b4b;
-                display: none;
-                text-align: left;
-            "></div>
-
-            <button id="sendBtn" onclick="sendVoice()" style="
-                display: none;
-                background: linear-gradient(90deg, #10b981, #059669);
-                color: white;
-                border: none;
-                border-radius: 50px;
-                padding: 10px 30px;
-                font-size: 14px;
-                font-weight: 600;
-                cursor: pointer;
-                width: 100%;
-                margin-top: 5px;
-            ">Send Message</button>
-        </div>
-
-        <script>
-        let recognition;
-        let spokenText = '';
-
-        function startVoice() {
-            const SR = window.SpeechRecognition ||
-                       window.webkitSpeechRecognition;
-            if (!SR) {
-                document.getElementById('statusText').innerText =
-                    'Please use Google Chrome!';
-                return;
-            }
-            recognition = new SR();
-            recognition.lang = 'en-US';
-            recognition.interimResults = true;
-            recognition.continuous = false;
-            spokenText = '';
-
-            recognition.onstart = () => {
-                document.getElementById('micBtn').innerText =
-                    '🔴 Listening... speak now!';
-                document.getElementById('micBtn').style.background =
-                    'linear-gradient(90deg, #ef4444, #dc2626)';
-                document.getElementById('statusText').innerText =
-                    'Speak your message clearly...';
-                document.getElementById('transcriptBox').style.display = 'block';
-                document.getElementById('sendBtn').style.display = 'none';
-            };
-
-            recognition.onresult = (event) => {
-                let interim = '';
-                spokenText = '';
-                for (let i = 0; i < event.results.length; i++) {
-                    if (event.results[i].isFinal) {
-                        spokenText += event.results[i][0].transcript;
-                    } else {
-                        interim += event.results[i][0].transcript;
-                    }
-                }
-                document.getElementById('transcriptBox').innerText =
-                    spokenText || interim;
-            };
-
-            recognition.onend = () => {
-                document.getElementById('micBtn').innerText = '🎤 Speak Again';
-                document.getElementById('micBtn').style.background =
-                    'linear-gradient(90deg, #7c3aed, #4f46e5)';
-                if (spokenText) {
-                    document.getElementById('statusText').innerText =
-                        'Done! Click Send Message.';
-                    document.getElementById('sendBtn').style.display = 'block';
-                } else {
-                    document.getElementById('statusText').innerText =
-                        'Nothing heard. Try again!';
-                }
-            };
-
-            recognition.onerror = (e) => {
-                document.getElementById('statusText').innerText =
-                    'Error: ' + e.error + '. Try again!';
-                document.getElementById('micBtn').innerText = '🎤 Try Again';
-            };
-
-            recognition.start();
-        }
-
-        function sendVoice() {
-            if (spokenText) {
-                const textarea = window.parent.document.querySelector(
-                    '[data-testid="stChatInput"] textarea'
-                );
-                if (textarea) {
-                    const setter = Object.getOwnPropertyDescriptor(
-                        window.HTMLTextAreaElement.prototype, 'value'
-                    ).set;
-                    setter.call(textarea, spokenText);
-                    textarea.dispatchEvent(
-                        new Event('input', { bubbles: true })
-                    );
-                    setTimeout(() => {
-                        textarea.dispatchEvent(new KeyboardEvent('keydown', {
-                            key: 'Enter',
-                            code: 'Enter',
-                            bubbles: true
-                        }));
-                    }, 300);
-                }
-            }
-        }
-        </script>
-    """, height=320)
 
 if prompt:
     with st.chat_message("user"):
