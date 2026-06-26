@@ -581,16 +581,177 @@ def get_ai_response(user_prompt):
 
 
 # INPUT ROW
-col1, col2 = st.columns([8, 1])
+prompt = st.chat_input("Ask me anything...")
 
-with col2:
-    mic_clicked = st.button("🎤")
+components.html("""
+    <style>
+    .mic-fab {
+        position: fixed;
+        bottom: 18px;
+        right: 18px;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #7c3aed, #4f46e5);
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        box-shadow: 0 4px 20px rgba(124,58,237,0.4);
+        z-index: 9999;
+        transition: all 0.2s;
+    }
+    .mic-fab:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 25px rgba(124,58,237,0.6);
+    }
+    .mic-fab.listening {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        animation: ripple 1s infinite;
+    }
+    @keyframes ripple {
+        0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+        70% { box-shadow: 0 0 0 15px rgba(239,68,68,0); }
+        100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+    }
+    .mic-status {
+        position: fixed;
+        bottom: 75px;
+        right: 10px;
+        background: white;
+        border: 1px solid #e9d5ff;
+        border-radius: 12px;
+        padding: 6px 12px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #7c3aed;
+        box-shadow: 0 4px 15px rgba(124,58,237,0.15);
+        z-index: 9999;
+        display: none;
+        max-width: 200px;
+        text-align: center;
+    }
+    </style>
 
-with col1:
-    prompt = st.chat_input("Ask me anything...")
+    <button class="mic-fab" id="micBtn" onclick="toggleVoice()">🎤</button>
+    <div class="mic-status" id="micStatus">Listening...</div>
 
-if mic_clicked:
-    components.html("""
+    <script>
+    let recognition;
+    let isListening = false;
+    let spokenText = '';
+
+    function toggleVoice() {
+        if (!isListening) {
+            startListening();
+        } else {
+            stopListening();
+        }
+    }
+
+    function startListening() {
+        const SR = window.SpeechRecognition ||
+                   window.webkitSpeechRecognition;
+        if (!SR) {
+            showStatus('Use Chrome browser!');
+            return;
+        }
+
+        recognition = new SR();
+        recognition.lang = 'en-US';
+        recognition.interimResults = true;
+        recognition.continuous = false;
+        spokenText = '';
+
+        recognition.onstart = () => {
+            isListening = true;
+            document.getElementById('micBtn').classList.add('listening');
+            document.getElementById('micBtn').innerText = '🔴';
+            showStatus('Listening... speak now!');
+        };
+
+        recognition.onresult = (event) => {
+            let interim = '';
+            spokenText = '';
+            for (let i = 0; i < event.results.length; i++) {
+                if (event.results[i].isFinal) {
+                    spokenText += event.results[i][0].transcript;
+                } else {
+                    interim += event.results[i][0].transcript;
+                }
+            }
+            showStatus(spokenText || interim);
+        };
+
+        recognition.onend = () => {
+            isListening = false;
+            document.getElementById('micBtn').classList.remove('listening');
+            document.getElementById('micBtn').innerText = '🎤';
+
+            if (spokenText) {
+                showStatus('Sending: ' + spokenText);
+                sendToChat(spokenText);
+                setTimeout(() => hideStatus(), 2000);
+            } else {
+                showStatus('Nothing heard. Try again!');
+                setTimeout(() => hideStatus(), 2000);
+            }
+        };
+
+        recognition.onerror = (e) => {
+            isListening = false;
+            document.getElementById('micBtn').classList.remove('listening');
+            document.getElementById('micBtn').innerText = '🎤';
+            showStatus('Error: ' + e.error);
+            setTimeout(() => hideStatus(), 2000);
+        };
+
+        recognition.start();
+    }
+
+    function stopListening() {
+        if (recognition) recognition.stop();
+    }
+
+    function showStatus(text) {
+        const s = document.getElementById('micStatus');
+        s.innerText = text;
+        s.style.display = 'block';
+    }
+
+    function hideStatus() {
+        document.getElementById('micStatus').style.display = 'none';
+    }
+
+    function sendToChat(text) {
+        const textarea = window.parent.document.querySelector(
+            '[data-testid="stChatInput"] textarea'
+        );
+        if (textarea) {
+            const setter = Object.getOwnPropertyDescriptor(
+                window.HTMLTextAreaElement.prototype, 'value'
+            ).set;
+            setter.call(textarea, text);
+            textarea.dispatchEvent(new Event('input', { bubbles: true }));
+            setTimeout(() => {
+                textarea.dispatchEvent(new KeyboardEvent('keydown', {
+                    key: 'Enter',
+                    code: 'Enter',
+                    bubbles: true
+                }));
+            }, 300);
+        }
+    }
+    </script>
+""", height=0)
+
+if prompt:
+    with st.chat_message("user"):
+        st.markdown(prompt)
+    get_ai_response(prompt)
+    st.rerun()
         <div id="voiceBox" style="
             position: fixed;
             bottom: 90px;
