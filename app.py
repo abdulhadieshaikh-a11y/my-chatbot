@@ -1,4 +1,3 @@
-
 import streamlit as st
 from groq import Groq
 import streamlit.components.v1 as components
@@ -80,11 +79,6 @@ st.markdown("""
         color: #6b7280;
         border: 1px solid transparent;
     }
-    .navbar-pill:hover {
-        background: #f5f0ff;
-        color: #7c3aed;
-        border-color: #e9d5ff;
-    }
     .navbar-right {
         display: flex;
         align-items: center;
@@ -116,7 +110,6 @@ st.markdown("""
         font-size: 13px;
         font-weight: 600;
         cursor: pointer;
-        box-shadow: 0 4px 15px rgba(124,58,237,0.3);
     }
     .hero {
         text-align: center;
@@ -157,9 +150,6 @@ st.markdown("""
         margin-bottom: 20px;
     }
     .cap-pill {
-        display: flex;
-        align-items: center;
-        gap: 5px;
         background: white;
         border: 1px solid #e9d5ff;
         border-radius: 20px;
@@ -221,21 +211,6 @@ st.markdown("""
     [data-testid="stSidebar"] label {
         color: #374151 !important;
     }
-    .sidebar-section {
-        background: #f9fafb;
-        border-radius: 12px;
-        padding: 12px;
-        margin-bottom: 12px;
-        border: 1px solid #f3f4f6;
-    }
-    .sidebar-title {
-        font-size: 11px;
-        font-weight: 700;
-        color: #9ca3af;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 10px;
-    }
     .skill-item {
         display: flex;
         align-items: center;
@@ -248,11 +223,6 @@ st.markdown("""
         font-weight: 500;
         background: white;
         border: 1px solid #f3f4f6;
-    }
-    .skill-icon {
-        font-size: 16px;
-        width: 24px;
-        text-align: center;
     }
     .stButton button {
         background: linear-gradient(90deg, #7c3aed, #4f46e5) !important;
@@ -286,6 +256,20 @@ st.markdown("""
         padding-top: 75px !important;
         max-width: 780px;
         margin: auto;
+    }
+    .bottom-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        border-top: 1px solid #e9d5ff;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        z-index: 998;
+        box-shadow: 0 -4px 20px rgba(124,58,237,0.08);
     }
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: #f9fafb; }
@@ -360,10 +344,9 @@ You can help with absolutely everything including:
 - Business and finance advice
 - Islamic knowledge
 - Essay and content writing
-- And absolutely anything else!
-Always give clear, helpful and friendly answers.
+Always give clear helpful and friendly answers.
 Format code properly with code blocks.
-Be warm, encouraging and supportive."""
+Be warm encouraging and supportive."""
 
 with st.sidebar:
     st.markdown("""
@@ -383,18 +366,22 @@ with st.sidebar:
         padding:8px 12px; margin-bottom:12px;
         border:1px solid #bbf7d0; display:flex;
         align-items:center; gap:8px;'>
-            <span style='color:#10b981; font-size:18px;'>●</span>
+            <span style='color:#10b981;'>●</span>
             <span style='color:#065f46; font-size:13px;
             font-weight:600;'>AI is Online and Ready</span>
         </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("<div class='sidebar-section'>",
-                unsafe_allow_html=True)
-    st.markdown("<div class='sidebar-title'>Settings</div>",
-                unsafe_allow_html=True)
     voice_reply = st.toggle("Voice Reply", value=True)
-    st.markdown("</div>", unsafe_allow_html=True)
+
+    st.markdown("<hr style='border-color:#f3f4f6;'>",
+                unsafe_allow_html=True)
+    st.markdown("""
+        <div style='font-size:11px; font-weight:700;
+        color:#9ca3af; text-transform:uppercase;
+        letter-spacing:1px; margin-bottom:10px;'>
+        What I Can Do</div>
+    """, unsafe_allow_html=True)
 
     skills = [
         ("💻", "Python and Coding"),
@@ -410,24 +397,19 @@ with st.sidebar:
         ("🧠", "General Knowledge"),
         ("❓", "Hard Questions"),
     ]
-
-    st.markdown("<div class='sidebar-section'>",
-                unsafe_allow_html=True)
-    st.markdown("<div class='sidebar-title'>What I Can Do</div>",
-                unsafe_allow_html=True)
     for icon, skill in skills:
         st.markdown(f"""
             <div class='skill-item'>
-                <span class='skill-icon'>{icon}</span>
+                <span>{icon}</span>
                 <span>{skill}</span>
             </div>
         """, unsafe_allow_html=True)
-    st.markdown("</div>", unsafe_allow_html=True)
 
+    st.markdown("<hr style='border-color:#f3f4f6;'>",
+                unsafe_allow_html=True)
     if st.button("Clear Chat History"):
         st.session_state.messages = []
         st.rerun()
-
     st.markdown("""
         <div style='text-align:center; margin-top:15px;'>
             <p style='color:#d1d5db; font-size:11px;'>
@@ -442,8 +424,8 @@ st.markdown("""
         </div>
         <div class="hero-title">Hadie's AI Chatbot</div>
         <div class="hero-subtitle">
-            Your professional AI assistant for coding, math,
-            writing, and everything else
+            Your professional AI assistant for coding,
+            math, writing, and everything else
         </div>
         <div class="caps-row">
             <div class="cap-pill">💻 Write Code</div>
@@ -485,14 +467,12 @@ if "messages" not in st.session_state:
         **Hello! Welcome to Hadie's AI Chatbot!**
 
         I am your personal professional AI assistant!
-        I can help you with anything — just ask!
 
         **Try asking me:**
         - Write a Python program for me
         - Solve this math problem: 25 x 48
         - Explain quantum physics simply
         - Give me a chicken recipe
-        - What is the capital of Japan?
 
         **Type below or click the mic button to speak!**
         """)
@@ -502,6 +482,9 @@ for message in st.session_state.messages:
         if message["role"] == "assistant" else None
     with st.chat_message(message["role"], avatar=avatar):
         st.markdown(message["content"])
+
+st.markdown("<div style='height:80px;'></div>",
+            unsafe_allow_html=True)
 
 
 def get_ai_response(user_prompt):
@@ -536,56 +519,58 @@ prompt = st.chat_input("Ask me anything...")
 
 components.html("""
     <style>
-    .mic-fab {
+    .mic-btn {
         position: fixed;
-        bottom: 18px;
-        right: 18px;
-        width: 48px;
-        height: 48px;
+        bottom: 14px;
+        right: 80px;
+        width: 46px;
+        height: 46px;
         border-radius: 50%;
         background: linear-gradient(135deg, #7c3aed, #4f46e5);
         border: none;
         cursor: pointer;
         font-size: 20px;
-        box-shadow: 0 4px 20px rgba(124,58,237,0.4);
+        box-shadow: 0 4px 15px rgba(124,58,237,0.4);
         z-index: 9999;
         transition: all 0.2s;
         color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
-    .mic-fab:hover {
+    .mic-btn:hover {
         transform: scale(1.1);
-        box-shadow: 0 6px 25px rgba(124,58,237,0.6);
+        box-shadow: 0 6px 20px rgba(124,58,237,0.6);
     }
-    .mic-fab.listening {
-        background: linear-gradient(135deg, #ef4444, #dc2626);
-        animation: ripple 1s infinite;
+    .mic-btn.listening {
+        background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+        animation: pulse 1s infinite;
     }
-    @keyframes ripple {
+    @keyframes pulse {
         0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
-        70% { box-shadow: 0 0 0 15px rgba(239,68,68,0); }
+        70% { box-shadow: 0 0 0 12px rgba(239,68,68,0); }
         100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
     }
     .mic-status {
         position: fixed;
-        bottom: 75px;
-        right: 10px;
+        bottom: 70px;
+        right: 70px;
         background: white;
-        border: 1px solid #e9d5ff;
-        border-radius: 12px;
-        padding: 6px 12px;
+        border: 1.5px solid #e9d5ff;
+        border-radius: 10px;
+        padding: 5px 12px;
         font-size: 12px;
         font-weight: 600;
         color: #7c3aed;
         box-shadow: 0 4px 15px rgba(124,58,237,0.15);
         z-index: 9999;
         display: none;
-        max-width: 200px;
-        text-align: center;
+        white-space: nowrap;
     }
     </style>
 
-    <button class="mic-fab" id="micBtn" onclick="toggleVoice()">🎤</button>
-    <div class="mic-status" id="micStatus">Listening...</div>
+    <button class="mic-btn" id="micBtn" onclick="toggleVoice()">🎤</button>
+    <div class="mic-status" id="micStatus"></div>
 
     <script>
     let recognition;
@@ -638,7 +623,7 @@ components.html("""
             document.getElementById('micBtn').classList.remove('listening');
             document.getElementById('micBtn').innerText = '🎤';
             if (spokenText) {
-                showStatus('Sending message...');
+                showStatus('Sending...');
                 sendToChat(spokenText);
                 setTimeout(() => hideStatus(), 2000);
             } else {
