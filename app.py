@@ -256,28 +256,6 @@ st.markdown("""
         max-width: 780px;
         margin: auto;
     }
-    .voice-box {
-        background: white;
-        border: 2px solid #e9d5ff;
-        border-radius: 20px;
-        padding: 15px 20px;
-        margin-bottom: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 15px;
-        box-shadow: 0 2px 10px rgba(124,58,237,0.08);
-    }
-    .voice-label {
-        font-size: 13px;
-        font-weight: 600;
-        color: #7c3aed;
-    }
-    .voice-hint {
-        font-size: 11px;
-        color: #9ca3af;
-        margin-top: 2px;
-    }
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: #f9fafb; }
     ::-webkit-scrollbar-thumb {
@@ -519,12 +497,17 @@ def get_ai_response(user_prompt):
         {"role": "assistant", "content": reply})
 
 
-col1, col2, col3 = st.columns([1, 8, 1])
+col1, col2 = st.columns([9, 1])
 
-with col2:
+with col1:
     prompt = st.chat_input("Type your message here...")
 
-with col3:
+with col2:
+    st.markdown(
+        "<p style='font-size:11px; color:#9ca3af;"
+        "text-align:center; margin-bottom:2px;'>🎤 Voice</p>",
+        unsafe_allow_html=True
+    )
     audio_bytes = audio_recorder(
         text="",
         recording_color="#ef4444",
@@ -550,50 +533,6 @@ if audio_bytes:
                 st.markdown(voice_text)
             get_ai_response(voice_text)
             st.rerun()
-
-if prompt:
-    with st.chat_message("user"):
-        st.markdown(prompt)
-    get_ai_response(prompt)
-    st.rerun()
-        <div>
-            <div class="voice-label">🎤 Voice Input</div>
-            <div class="voice-hint">
-                Click the mic button, speak, then send
-            </div>
-        </div>
-    </div>
-""", unsafe_allow_html=True)
-
-audio_bytes = audio_recorder(
-    text="",
-    recording_color="#ef4444",
-    neutral_color="#7c3aed",
-    icon_name="microphone",
-    icon_size="2x",
-    pause_threshold=2.0
-)
-
-if audio_bytes:
-    st.audio(audio_bytes, format="audio/wav")
-    client = Groq(api_key=st.secrets["GROQ_API_KEY"])
-    with st.spinner("Converting your voice to text..."):
-        audio_file = io.BytesIO(audio_bytes)
-        audio_file.name = "voice.wav"
-        transcription = client.audio.transcriptions.create(
-            model="whisper-large-v3",
-            file=audio_file,
-            language="en"
-        )
-        voice_text = transcription.text
-        if voice_text:
-            st.success(f"You said: {voice_text}")
-            with st.chat_message("user"):
-                st.markdown(voice_text)
-            get_ai_response(voice_text)
-            st.rerun()
-
-prompt = st.chat_input("Or type your message here...")
 
 if prompt:
     with st.chat_message("user"):
