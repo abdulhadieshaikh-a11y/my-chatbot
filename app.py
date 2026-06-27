@@ -1,6 +1,8 @@
 import streamlit as st
 from groq import Groq
 import streamlit.components.v1 as components
+from audio_recorder_streamlit import audio_recorder
+import io
 
 st.set_page_config(
     page_title="Hadie's AI Chatbot",
@@ -254,6 +256,28 @@ st.markdown("""
         max-width: 780px;
         margin: auto;
     }
+    .voice-box {
+        background: white;
+        border: 2px solid #e9d5ff;
+        border-radius: 20px;
+        padding: 15px 20px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        box-shadow: 0 2px 10px rgba(124,58,237,0.08);
+    }
+    .voice-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #7c3aed;
+    }
+    .voice-hint {
+        font-size: 11px;
+        color: #9ca3af;
+        margin-top: 2px;
+    }
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: #f9fafb; }
     ::-webkit-scrollbar-thumb {
@@ -457,7 +481,7 @@ if "messages" not in st.session_state:
         - Explain quantum physics simply
         - Give me a chicken recipe
 
-        **Type below or click the mic button to speak!**
+        **Type below or use the mic button to speak!**
         """)
 
 for message in st.session_state.messages:
@@ -495,77 +519,46 @@ def get_ai_response(user_prompt):
         {"role": "assistant", "content": reply})
 
 
-if "voice_text" not in st.session_state:
-    st.session_state.voice_text = ""
-
-st.markdown("<div style='height:10px'></div>",
-            unsafe_allow_html=True)
-
-col1, col2 = st.columns([10, 1])
-
-with col1:
-    prompt = st.chat_input("Ask me anything...")
-
-with col2:
-    st.markdown("""
-        <div style='display:flex; align-items:center;
-        justify-content:center; height:50px;'>
+st.markdown("""
+    <div class="voice-box">
+        <div>
+            <div class="voice-label">🎤 Voice Input</div>
+            <div class="voice-hint">
+                Click the mic button, speak, then send
+            </div>
         </div>
-    """, unsafe_allow_html=True)
-    mic_btn = st.button("🎤", key="mic",
-                        help="Click to speak")
+    </div>
+""", unsafe_allow_html=True)
 
-if mic_btn:
-    components.html("""
-        <script>
-        function startVoice() {
-            const SR = window.parent.SpeechRecognition ||
-                       window.parent.webkitSpeechRecognition;
-            if (!SR) {
-                alert('Please use Google Chrome for voice!');
-                return;
-            }
-            const recognition = new SR();
-            recognition.lang = 'en-US';
-            recognition.interimResults = false;
-            recognition.continuous = false;
+audio_bytes = audio_recorder(
+    text="",
+    recording_color="#ef4444",
+    neutral_color="#7c3aed",
+    icon_name="microphone",
+    icon_size="2x",
+    pause_threshold=2.0
+)
 
-            recognition.onresult = (event) => {
-                const text = event.results[0][0].transcript;
-                const textarea = window.parent.document.querySelector(
-                    '[data-testid="stChatInput"] textarea'
-                );
-                if (textarea) {
-                    const setter = Object.getOwnPropertyDescriptor(
-                        window.parent.HTMLTextAreaElement.prototype,
-                        'value'
-                    ).set;
-                    setter.call(textarea, text);
-                    textarea.dispatchEvent(
-                        new Event('input', { bubbles: true })
-                    );
-                    setTimeout(() => {
-                        textarea.dispatchEvent(
-                            new KeyboardEvent('keydown', {
-                                key: 'Enter',
-                                code: 'Enter',
-                                bubbles: true
-                            })
-                        );
-                    }, 500);
-                }
-            };
+if audio_bytes:
+    st.audio(audio_bytes, format="audio/wav")
+    client = Groq(api_key=st.secrets["GROQ_API_KEY"])
+    with st.spinner("Converting your voice to text..."):
+        audio_file = io.BytesIO(audio_bytes)
+        audio_file.name = "voice.wav"
+        transcription = client.audio.transcriptions.create(
+            model="whisper-large-v3",
+            file=audio_file,
+            language="en"
+        )
+        voice_text = transcription.text
+        if voice_text:
+            st.success(f"You said: {voice_text}")
+            with st.chat_message("user"):
+                st.markdown(voice_text)
+            get_ai_response(voice_text)
+            st.rerun()
 
-            recognition.onerror = (e) => {
-                alert('Voice error: ' + e.error +
-                      '. Please use Chrome!');
-            };
-
-            recognition.start();
-        }
-        startVoice();
-        </script>
-    """, height=0)
+prompt = st.chat_input("Or type your message here...")
 
 if prompt:
     with st.chat_message("user"):
