@@ -3,6 +3,7 @@ from groq import Groq
 import streamlit.components.v1 as components
 from audio_recorder_streamlit import audio_recorder
 import io
+import hashlib
 
 st.set_page_config(
     page_title="Hadie's AI Chatbot",
@@ -394,6 +395,7 @@ with st.sidebar:
                 unsafe_allow_html=True)
     if st.button("Clear Chat History"):
         st.session_state.messages = []
+        st.session_state.last_audio_hash = ""
         st.rerun()
     st.markdown("""
         <div style='text-align:center; margin-top:15px;'>
@@ -446,6 +448,17 @@ st.markdown("""
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
+if "last_audio_hash" not in st.session_state:
+    st.session_state.last_audio_hash = ""
+
+for message in st.session_state.messages:
+    avatar = "https://placehold.co/100x100/7c3aed/white?text=H&font=montserrat" \
+        if message["role"] == "assistant" else None
+    with st.chat_message(message["role"], avatar=avatar):
+        st.markdown(message["content"])
+
+if not st.session_state.messages:
     with st.chat_message("assistant",
             avatar="https://placehold.co/100x100/7c3aed/white?text=H&font=montserrat"):
         st.markdown("""
@@ -461,12 +474,6 @@ if "messages" not in st.session_state:
 
         **Type below or use the mic button to speak!**
         """)
-
-for message in st.session_state.messages:
-    avatar = "https://placehold.co/100x100/7c3aed/white?text=H&font=montserrat" \
-        if message["role"] == "assistant" else None
-    with st.chat_message(message["role"], avatar=avatar):
-        st.markdown(message["content"])
 
 
 def get_ai_response(user_prompt):
@@ -518,21 +525,24 @@ with col2:
     )
 
 if audio_bytes:
-    client = Groq(api_key=st.secrets["GROQ_API_KEY"])
-    with st.spinner("Converting voice to text..."):
-        audio_file = io.BytesIO(audio_bytes)
-        audio_file.name = "voice.wav"
-        transcription = client.audio.transcriptions.create(
-            model="whisper-large-v3",
-            file=audio_file,
-            language="en"
-        )
-        voice_text = transcription.text
-        if voice_text:
-            with st.chat_message("user"):
-                st.markdown(voice_text)
-            get_ai_response(voice_text)
-            st.rerun()
+    audio_hash = hashlib.md5(audio_bytes).hexdigest()
+    if audio_hash != st.session_state.last_audio_hash:
+        st.session_state.last_audio_hash = audio_hash
+        client = Groq(api_key=st.secrets["GROQ_API_KEY"])
+        with st.spinner("Converting voice to text..."):
+            audio_file = io.BytesIO(audio_bytes)
+            audio_file.name = "voice.wav"
+            transcription = client.audio.transcriptions.create(
+                model="whisper-large-v3",
+                file=audio_file,
+                language="en"
+            )
+            voice_text = transcription.text
+            if voice_text:
+                with st.chat_message("user"):
+                    st.markdown(voice_text)
+                get_ai_response(voice_text)
+                st.rerun()
 
 if prompt:
     with st.chat_message("user"):
