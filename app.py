@@ -519,8 +519,43 @@ def get_ai_response(user_prompt):
         {"role": "assistant", "content": reply})
 
 
-st.markdown("""
-    <div class="voice-box">
+col1, col2, col3 = st.columns([1, 8, 1])
+
+with col2:
+    prompt = st.chat_input("Type your message here...")
+
+with col3:
+    audio_bytes = audio_recorder(
+        text="",
+        recording_color="#ef4444",
+        neutral_color="#7c3aed",
+        icon_name="microphone",
+        icon_size="1x",
+        pause_threshold=2.0
+    )
+
+if audio_bytes:
+    client = Groq(api_key=st.secrets["GROQ_API_KEY"])
+    with st.spinner("Converting voice to text..."):
+        audio_file = io.BytesIO(audio_bytes)
+        audio_file.name = "voice.wav"
+        transcription = client.audio.transcriptions.create(
+            model="whisper-large-v3",
+            file=audio_file,
+            language="en"
+        )
+        voice_text = transcription.text
+        if voice_text:
+            with st.chat_message("user"):
+                st.markdown(voice_text)
+            get_ai_response(voice_text)
+            st.rerun()
+
+if prompt:
+    with st.chat_message("user"):
+        st.markdown(prompt)
+    get_ai_response(prompt)
+    st.rerun()
         <div>
             <div class="voice-label">🎤 Voice Input</div>
             <div class="voice-hint">
